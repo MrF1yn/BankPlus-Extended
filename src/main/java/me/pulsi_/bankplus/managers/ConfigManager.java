@@ -22,13 +22,14 @@ public class ConfigManager {
     private final String spaceIdentifier = "bankplus_space";
 
     private final BankPlus plugin;
-    private File configFile, messagesFile, multipleBanksFile;
-    private FileConfiguration config, messagesConfig, multipleBanksConfig;
+    private File configFile, messagesFile, multipleBanksFile, shinyfeaturesFile;
+    private FileConfiguration config, messagesConfig, multipleBanksConfig, shinyfeatures;
 
     public enum Type {
         CONFIG,
         MESSAGES,
-        MULTIPLE_BANKS
+        MULTIPLE_BANKS,
+        SHINY_FEATURES;
     }
 
     public ConfigManager(BankPlus plugin) {
@@ -39,18 +40,26 @@ public class ConfigManager {
         configFile = new File(plugin.getDataFolder(), "config.yml");
         messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         multipleBanksFile = new File(plugin.getDataFolder(), "multiple_banks.yml");
+        shinyfeaturesFile = new File(plugin.getDataFolder(), "shinyfeatures.yml");
 
         if (!configFile.exists()) plugin.saveResource("config.yml", false);
         if (!messagesFile.exists()) plugin.saveResource("messages.yml", false);
         if (!multipleBanksFile.exists()) plugin.saveResource("multiple_banks.yml", false);
+        if (!shinyfeaturesFile.exists()) plugin.saveResource("shinyfeatures.yml", false);
 
         config = new YamlConfiguration();
         messagesConfig = new YamlConfiguration();
         multipleBanksConfig = new YamlConfiguration();
+        shinyfeatures = new YamlConfiguration();
 
         reloadConfig(Type.CONFIG);
         reloadConfig(Type.MESSAGES);
         reloadConfig(Type.MULTIPLE_BANKS);
+        try {
+            shinyfeatures.load(shinyfeaturesFile);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         buildConfig();
         buildMessages();
@@ -67,6 +76,8 @@ public class ConfigManager {
                 return messagesConfig;
             case MULTIPLE_BANKS:
                 return multipleBanksConfig;
+            case SHINY_FEATURES:
+                return shinyfeatures;
             default:
                 return null;
         }
@@ -77,6 +88,14 @@ public class ConfigManager {
             case CONFIG:
                 try {
                     config.load(configFile);
+                    return true;
+                } catch (IOException | InvalidConfigurationException e) {
+                    BPLogger.error(e.getMessage());
+                    return false;
+                }
+            case SHINY_FEATURES:
+                try {
+                    shinyfeatures.load(shinyfeaturesFile);
                     return true;
                 } catch (IOException | InvalidConfigurationException e) {
                     BPLogger.error(e.getMessage());

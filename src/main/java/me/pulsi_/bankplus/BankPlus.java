@@ -1,5 +1,6 @@
 package me.pulsi_.bankplus;
 
+import de.slikey.effectlib.EffectManager;
 import me.pulsi_.bankplus.account.BankPlusPlayer;
 import me.pulsi_.bankplus.account.economy.MultiEconomyManager;
 import me.pulsi_.bankplus.account.economy.SingleEconomyManager;
@@ -7,12 +8,16 @@ import me.pulsi_.bankplus.bankGuis.BankGui;
 import me.pulsi_.bankplus.interest.Interest;
 import me.pulsi_.bankplus.managers.*;
 import me.pulsi_.bankplus.placeholders.Placeholders;
+import me.pulsi_.bankplus.shinyfeatures.Cache;
+import me.pulsi_.bankplus.shinyfeatures.RandomDrop;
+import me.pulsi_.bankplus.shinyfeatures.ShinyDeathListener;
 import me.pulsi_.bankplus.utils.BPLogger;
 import me.pulsi_.bankplus.utils.BPVersions;
 import me.pulsi_.bankplus.values.Values;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public final class BankPlus extends JavaPlugin {
 
@@ -40,6 +46,9 @@ public final class BankPlus extends JavaPlugin {
     private AFKManager afkManager;
     private TaskManager taskManager;
     private Interest interest;
+    public EffectManager elib;
+    public RandomDrop rDrop;
+    public Cache cache;
 
     private boolean isPlaceholderAPIHooked = false, isEssentialsXHooked = false, isUpdated = true;
     private String serverVersion;
@@ -47,6 +56,7 @@ public final class BankPlus extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        elib = new EffectManager(this);
         if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
             BPLogger.log("");
             BPLogger.log("&cCannot load &a&lBank&9&lPlus&c, Vault is not installed!");
@@ -92,6 +102,17 @@ public final class BankPlus extends JavaPlugin {
 
         BPVersions.moveBankFileToBanksFolder();
         BPVersions.changePlayerStoragePosition(0);
+
+        cache = new Cache();
+        cache.initCache();
+        if(features().getBoolean("death-drop.enabled")) {
+            getServer().getPluginManager().registerEvents(new ShinyDeathListener(), this);
+        }
+        if(features().getBoolean("random-drop.enabled")){
+            rDrop = new RandomDrop(features().getLong("random-drop.timer-duration"));
+            rDrop.startTask();
+            getLogger().log(Level.INFO, "Started Random-Drop Task. Timer-Duration: "+features().getLong("random-drop.timer-duration")+"secs.");
+        }
     }
 
     @Override
@@ -100,6 +121,7 @@ public final class BankPlus extends JavaPlugin {
         else Bukkit.getOnlinePlayers().forEach(p -> new SingleEconomyManager(p).saveBankBalance(false));
         if (Values.CONFIG.isInterestEnabled()) interest.saveInterest();
         dataManager.shutdownPlugin();
+        elib.dispose();
     }
 
     public HashMap<String, BankGui> getBanks() {
@@ -168,6 +190,10 @@ public final class BankPlus extends JavaPlugin {
 
     public static BankPlus instance() {
         return instance;
+    }
+
+    public FileConfiguration features(){
+        return this.configManager.getConfig(ConfigManager.Type.SHINY_FEATURES);
     }
 
     private boolean isPluginUpdated() {

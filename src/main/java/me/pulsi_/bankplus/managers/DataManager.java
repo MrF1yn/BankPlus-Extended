@@ -76,6 +76,7 @@ public class DataManager {
         if (!configManager.reloadConfig(ConfigManager.Type.CONFIG)) success = false;
         if (!configManager.reloadConfig(ConfigManager.Type.MESSAGES)) success = false;
         if (!configManager.reloadConfig(ConfigManager.Type.MULTIPLE_BANKS)) success = false;
+        if (!configManager.reloadConfig(ConfigManager.Type.SHINY_FEATURES)) success = false;
 
         Values.CONFIG.setupValues();
         Values.MESSAGES.setupValues();

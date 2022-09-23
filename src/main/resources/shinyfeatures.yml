@@ -1,0 +1,56 @@
+#define a groupname and add strings below you can use papi placeholders and color codes.
+#it will return a random value when the placeholders are parsed.
+#placeholder: %bankplus_randomstring_groupname%
+random-string-placeholders:
+  groupname:
+    - 'This is String 1'
+    - 'This is String 2'
+    - 'This is String 3'
+  groupname1:
+    - 'This is String 1'
+    - 'This is String 2'
+    - 'This is String 3'
+#placeholders: %bankplus_leaderboard_name_<pos>%
+#placeholders: %bankplus_leaderboard_value_<pos>%
+#in secs.
+leaderboard-update-interval: 10
+
+#configure money drop on death.
+death-drop:
+  enabled: true
+  #define groups with properties.
+  #to apply this property for a player give the permission "bankplus.deathdropgroup.<groupname>".
+  #to bypass give the permission "bankplus.deathdrop.bypass".
+  groups:
+    groupname:
+      #drops this percent of the player's purse balance on his death.
+      drop-percent: '30-60'
+      #enable if the money is dropped in form of a placed player head on right-clicking the player will get the money, if false the money will be purged.
+      drop-as-head: true
+      #add custom head texture.
+      head-texture-url: 'http://textures.minecraft.net/texture/2a1898b4147c6f7137b256fb468640738fdae532692b90e4e9ef2e62976c7a7d'
+      #define how much drop-percent will be permanently lost '10' means 10% of drop-percent
+      complete-loss-percent: '5-10'
+
+#configure timed random player money drops.
+random-drop:
+  enabled: true
+  #duration of global timers in seconds
+  timer-duration: 300
+  #define groups with properties.
+  #to apply this property for a player give the permission "bankplus.randomdropgroup.<groupname>".
+  #to bypass give the permission "bankplus.randomdrop.bypass".
+  groups:
+    groupname:
+      #the percent that defines if a player will drop money after the timer duration.
+      should-drop-percent: '20-50'
+      #the percent that defines the amount of money dropped if it should drop.
+      drop-percent: '5-10'
+      #enable if the money is dropped in form of a placed player head on right-clicking the player will get the money, if false the money will be purged.
+      drop-as-head: true
+      #add custom head texture.
+      head-texture-url: 'http://textures.minecraft.net/texture/2a1898b4147c6f7137b256fb468640738fdae532692b90e4e9ef2e62976c7a7d'
+
+messages:
+  money-pickup: "&aYou picked up [owner]'s &e[money]."
+  money-float-effect: "₿[money]"
