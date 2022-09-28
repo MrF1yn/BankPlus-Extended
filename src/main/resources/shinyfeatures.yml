@@ -10,10 +10,6 @@ random-string-placeholders:
     - 'This is String 1'
     - 'This is String 2'
     - 'This is String 3'
-#placeholders: %bankplus_leaderboard_name_<pos>%
-#placeholders: %bankplus_leaderboard_value_<pos>%
-#in secs.
-leaderboard-update-interval: 10
 
 #configure money drop on death.
 death-drop:
